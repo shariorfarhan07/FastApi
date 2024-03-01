@@ -3,9 +3,9 @@ app=FastAPI()
 
 # /feeds
 @app.get('/')
-def index():
+def index(username=Depends(auth_handler.auth_wrapper)):
     result = getNewsFeedData()
-    return {"farhan":"is the best"}
+    return result
 
 
 
@@ -21,12 +21,12 @@ def login(auth:AuthDetails):
 
 
 @app.get('/follow/{user_id}')
-def follow(user_id:int):
+def follow(user_id:int,username=Depends(auth_handler.auth_wrapper)):
     return {"farhan":"is the best"}
 
 
-@app.get('/search')
-def search():
+@app.get('/search/')
+def search(search:str ,username=Depends(auth_handler.auth_wrapper)):
     return {"farhan":"is the best"}
 
 
