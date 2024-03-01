@@ -31,7 +31,7 @@ def login(auth_details: AuthDetails):
 
 @app.get('/follow/{userName}', status_code=200)
 async def follow(userName:str,username=Depends(auth_handler.auth_wrapper)):
-    followUser(username,userName)
+    return followUser(username,userName)
 
 @app.get('/feeds', status_code=200)
 async def feeds(id:int,username=Depends(auth_handler.auth_wrapper)):
