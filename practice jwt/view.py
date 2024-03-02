@@ -8,3 +8,9 @@ class tweet(BaseModel):
     id : int
     user : str
     text : str
+
+
+def user(BaseModel):
+    id :int
+    name : str
+    password : str
