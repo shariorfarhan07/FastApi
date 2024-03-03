@@ -1,4 +1,4 @@
-from pydantic import BaseModel,Field
+from pydantic import BaseModel
 
 class AuthDetails(BaseModel):
     username: str
@@ -10,7 +10,7 @@ class tweet(BaseModel):
     text : str
 
 
-def user(BaseModel):
+class user(BaseModel):
     id :int
     name : str
     password : str

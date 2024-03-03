@@ -1,11 +1,20 @@
 from  fastapi import FastAPI ,Depends , HTTPException
+from starlette.middleware.cors import CORSMiddleware
 
 from auth import AuthHandeler
-from view import AuthDetails
+from view import AuthDetails , tweet
 
 import model
 auth_handler = AuthHandeler()
 app=FastAPI()
+
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],  # This allows all origins, you can replace it with specific origins if needed
+#     allow_credentials=True,
+#     allow_methods=["GET", "POST", "PUT", "DELETE"],  # You can specify the HTTP methods allowed
+#     allow_headers=["*"],  # You can specify the headers allowed
+# )
 
 # /feeds
 @app.get('/')
@@ -15,31 +24,45 @@ def index(username=Depends(auth_handler.auth_wrapper)):
 
 
 @app.post('/register')
-def register(auth:AuthDetails):
+async def register(auth:AuthDetails):
+    print(AuthDetails)
     users = model.searchUser(auth.username)
-    if len(users) != 0:
+    if users:
         raise HTTPException(status_code=400, detail='Username is taken')
     hashed_password = auth_handler.get_password_hash(auth.password)
     model.insertUser(auth.username, hashed_password)
-    return
+    return {"message":"account created successfully"}
 
 
 @app.post('/login')
-def login(auth:AuthDetails):
-    user = model.searchUser(auth.username)
-    if (len(user) == 0 or (not auth_handler.verify_password(auth_details.password, user[0]['password']))):
-        raise HTTPException(status_code=401, detail='Invalid username and/or password')
-    token = auth_handler.encode_token(user['username'])
+async def login(auth:AuthDetails):
+    u = model.searchUser(auth.username)
+    print(u)
+    if u == None:
+        if  not auth_handler.verify_password(auth.password, u['password']):
+            raise HTTPException(status_code=401, detail='Invalid username and/or password')
+    token = auth_handler.encode_token(u.name)
     return {'token': token}
 
 
 @app.get('/follow/{user_id}')
-def follow(user_id:int,username=Depends(auth_handler.auth_wrapper)):
+async def follow(user_id:int,username=Depends(auth_handler.auth_wrapper)):
      return model.follow(username,user_id)
 
 
 @app.get('/search/')
-def search(search:str ,username=Depends(auth_handler.auth_wrapper)):
+async def search(search:str ,username=Depends(auth_handler.auth_wrapper)):
     return model.search(search)
 
+
+@app.post('/post/')
+async def post(tweet:tweet ,username=Depends(auth_handler.auth_wrapper)):
+    if model.postTweet(tweet, username):
+        return  {'message':'successfully tweet posted'}
+
+
+@app.get('/myprofile')
+def index(username=Depends(auth_handler.auth_wrapper)):
+    result = model.getmytweetData(username)
+    return result
 

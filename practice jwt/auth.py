@@ -3,8 +3,8 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException,Security
 from fastapi.security import HTTPBearer,HTTPAuthorizationCredentials
 from passlib.context import CryptContext
-import  re as reamasfa
 
+import jwt
 
 class AuthHandeler():
     security=HTTPBearer()
@@ -15,17 +15,17 @@ class AuthHandeler():
     def verify_password(self,plain_password,hashed_password):
         return  self.pwd_context.verify(plain_password,hashed_password)
 
-    def encode_token(self, user_id, jwt=None):
+    def encode_token(self, user_id):
         payload = {
             'exp': datetime.utcnow() + timedelta(days=0, minutes=30),
             'iat': datetime.utcnow(),
             'sub': user_id
         }
-        return jwt.encode(payload,self.secret, algorithm='HS256')
+        return jwt.encode(payload, self.secret, algorithm='HS256')
     def auth_wrapper(self, auth: HTTPAuthorizationCredentials = Security(security)):
         return self.decode_token(auth.credentials)
 
-    def decode_token(self, token, jwt=None):
+    def decode_token(self, token):
         try:
             payload = jwt.decode(token, self.secret, algorithms=['HS256'])
             return payload['sub']
@@ -73,7 +73,7 @@ class auth2:
         return self.pwd_context.verify(plain_password,hashed_password)
     def encode_token(self, user_id, jwt=None):
         payload={
-            'exp': datetime.utcnow()+timedelta(minutes=30),
+            'exp': datetime.utcnow()+timedelta(minutes=50),
             'iat':datetime.utcnow(),
             'sub': user_id
         }
