@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, text
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker,declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
 
 from view import tweet as tweetview
 from view import user as Userobj
@@ -45,15 +45,15 @@ def rawQuery(raw):
         print(e)
 
 def addObjectToDB(obj):
-    # try:
+    try:
         db = Session()
         db.add(obj)
         db.commit()
         db.close()
         return True
-    # except Exception  as e:
-    #     print("couldn't add obj to db")
-        # print(e)
+    except Exception  as e:
+        print("couldn't add obj to db")
+        print(e)
 
         return False
 def getNewsFeedData(username):
@@ -103,12 +103,10 @@ def search(search):
 def insertUser(username, hashed_password):
     usr = user(name=username,password = hashed_password)
     addObjectToDB(usr)
-    return None
 
 
 def searchUser(username):
     name = rawQuery(f"select * from user where name ='{username}' limit 1;")
-    print(str(name) + 'this is farhan')
 
     if name!=None:
         for i in name:

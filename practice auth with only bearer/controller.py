@@ -20,10 +20,11 @@ def index(username=Depends(auth_handler.auth_wrapper)):
 async def register(auth:AuthDetails):
     print(AuthDetails)
     users = model.searchUser(auth.username)
-    if users:
+    if users :
         raise HTTPException(status_code=400, detail='Username is taken')
-    hashed_password = auth_handler.get_password_hash(auth.password)
-    model.insertUser(auth.username, hashed_password)
+    if '@' in auth.username or '@' in auth.password:
+        raise HTTPException(status_code=400, detail='Cant contain @ in username or password')
+    model.insertUser(auth.username, auth.password)
     return {"message":"account created successfully"}
 
 
@@ -32,10 +33,9 @@ async def login(auth:AuthDetails):
     u = model.searchUser(auth.username)
     print(u)
     if u == None:
-        if  not auth_handler.verify_password(auth.password, u['password']):
+        if  not (u.name==auth.username or u.password == auth.password ):
             raise HTTPException(status_code=401, detail='Invalid username and/or password')
-    token = auth_handler.encode_token(u.name)
-    return {'token': token}
+    return {'token': u.name+'@'+u.password}
 
 
 @app.get('/follow/{user_id}')

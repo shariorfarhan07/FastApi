@@ -8,15 +8,6 @@ import model
 auth_handler = AuthHandeler()
 app=FastAPI()
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],  # This allows all origins, you can replace it with specific origins if needed
-#     allow_credentials=True,
-#     allow_methods=["GET", "POST", "PUT", "DELETE"],  # You can specify the HTTP methods allowed
-#     allow_headers=["*"],  # You can specify the headers allowed
-# )
-
-# /feeds
 @app.get('/')
 def index(username=Depends(auth_handler.auth_wrapper)):
     result = model.getNewsFeedData(username)

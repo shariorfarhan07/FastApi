@@ -126,9 +126,14 @@ def postTweet(t,username):
 
 def getmytweetData(username):
     data = rawQuery(
-        f"SELECT * FROM tweet where user = '{username}'")
+        f"SELECT * FROM tweet where user = '{username}'"
+        )
     print(data)
     if data == None:
         return []
     dataToJson = [tweetview(id=i[0],text=i[1],user=i[2]).dict() for i in data]
     return dataToJson
+
+def dataWrapper(data_set,ClassObject):
+    json=[ClassObject(*i) for  i in data_set]
+    return  json
